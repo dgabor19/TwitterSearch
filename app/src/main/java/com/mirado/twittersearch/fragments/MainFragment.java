@@ -3,7 +3,9 @@ package com.mirado.twittersearch.fragments;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,10 +19,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.mirado.twittersearch.MainActivity;
 import com.mirado.twittersearch.R;
 import com.mirado.twittersearch.adapters.TweetAdapter;
+import com.mirado.twittersearch.interfaces.TwitterItemClickListener;
 import com.mirado.twittersearch.utils.TwitterRequests;
 
 import java.util.ArrayList;
@@ -32,7 +36,7 @@ import twitter4j.Status;
  * Created by gabordudas on 10/02/16.
  * Copyright (c) 2015 TwitterSearch. All rights reserved.
  */
-public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, TwitterItemClickListener {
     public static final String TAG = MainFragment.class.getSimpleName();
 
     private MainActivity mActivity;
@@ -83,7 +87,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
-        mAdapter = new TweetAdapter(mActivity, mTweets);
+        mAdapter = new TweetAdapter(mActivity, mTweets, this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -103,19 +107,15 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 @Override
                 public boolean onQueryTextChange(String newText) {
 
-
-                    Log.i("onQueryTextChange", newText);
-
                     return true;
                 }
 
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    Log.i("onQueryTextSubmit", query);
-
                     mSearchKey = query;
                     setRefreshing(true);
                     mTwitterRequests.search(mSearchKey);
+                    MainActivity.hideKeyboard(mActivity, false);
 
                     return true;
                 }
@@ -169,6 +169,29 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onRefresh() {
-        mTwitterRequests.search(mSearchKey);
+        if (mSearchKey != null && mSearchKey.length() > 0) {
+            mTwitterRequests.search(mSearchKey);
+        } else {
+            Toast.makeText(mActivity, R.string.empty_search_refresh, Toast.LENGTH_LONG).show();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setRefreshing(false);
+                }
+            }, 1000);
+        }
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Log.d(TAG, "clicked on item " + position);
+
+        DetailsFragment detailsFragment = DetailsFragment.newInstance(position);
+
+        getFragmentManager().beginTransaction()
+                .add(R.id.container, detailsFragment, DetailsFragment.TAG)
+                .addToBackStack(DetailsFragment.TAG)
+                .commitAllowingStateLoss();
     }
 }
