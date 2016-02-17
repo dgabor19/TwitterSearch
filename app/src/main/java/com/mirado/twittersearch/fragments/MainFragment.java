@@ -235,6 +235,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         DetailsFragment detailsFragment = DetailsFragment.newInstance(position);
 
         getFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, 0, android.R.anim.fade_out, 0)
                 .add(R.id.container, detailsFragment, DetailsFragment.TAG)
                 .addToBackStack(DetailsFragment.TAG)
                 .commitAllowingStateLoss();
