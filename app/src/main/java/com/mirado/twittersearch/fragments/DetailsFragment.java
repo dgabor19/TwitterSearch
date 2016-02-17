@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,8 +26,12 @@ import twitter4j.Status;
  * Created by gabordudas on 10/02/16.
  * Copyright (c) 2015 TwitterSearch. All rights reserved.
  */
+
+/**
+ * Showing the detail view when the user clicked on a list item
+ */
 public class DetailsFragment extends Fragment {
-    public static final String TAG = MainFragment.class.getSimpleName();
+    public static final String TAG = DetailsFragment.class.getSimpleName();
 
     private static final String PARAM_POSITION = "position";
 
@@ -46,6 +49,11 @@ public class DetailsFragment extends Fragment {
     public DetailsFragment() {
     }
 
+    /**
+     * Getting the instance of the Fragment
+     * @param position
+     * @return
+     */
     public static DetailsFragment newInstance(int position) {
         DetailsFragment fragment = new DetailsFragment();
 
@@ -73,6 +81,14 @@ public class DetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
 
+        if (mActivity.getSupportActionBar() == null) {
+            mActivity.setSupportActionBar(mActivity.getToolbar());
+        }
+
+        // Enabling the back navigation button on top
+        mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mActivity.getSupportActionBar().setHomeButtonEnabled(true);
+
         return inflater.inflate(R.layout.fragment_details, container, false);
     }
 
@@ -80,12 +96,14 @@ public class DetailsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Getting the basic UI elements from interface builder
         mImage = (ImageView) view.findViewById(R.id.imageDetails);
         mName = (TextView) view.findViewById(R.id.textNameDetails);
         mAlias = (TextView) view.findViewById(R.id.textAliasDetails);
         mDescription = (TextView) view.findViewById(R.id.textDescriptionDetails);
         mDate = (TextView) view.findViewById(R.id.textDateDetails);
 
+        // Async response deserialization
         new AsyncTask<Integer, Void, Status>() {
             @Override
             protected twitter4j.Status doInBackground(Integer... params) {
@@ -109,8 +127,13 @@ public class DetailsFragment extends Fragment {
         }.execute(mPosition);
     }
 
+    /**
+     * Populates the views with loaded response
+     */
     private void setUI() {
         if (mTweet != null) {
+
+            // Async image loading
             ImageLoader.getInstance()
                     .displayImage(
                             mTweet.getUser().getOriginalProfileImageURL(),
@@ -130,7 +153,14 @@ public class DetailsFragment extends Fragment {
         switch (item.getItemId()) {
             case android.R.id.home:
 
+                // Navigate back by clicking on the back button on top
                 getFragmentManager().popBackStack();
+
+                // Sets the MainFragment to default
+                MainFragment mainFragment = (MainFragment) getFragmentManager().findFragmentByTag(MainFragment.TAG);
+                if (mainFragment != null) {
+                    mainFragment.setToolbar();
+                }
 
                 return false;
             default:
@@ -139,19 +169,4 @@ public class DetailsFragment extends Fragment {
 
         return false;
     }
-
-
-//    public void setTweet(Status tweet) {
-//        mTweet = tweet;
-//
-//        ImageLoader.getInstance()
-//                .displayImage(
-//                        tweet.getUser().getOriginalProfileImageURL(),
-//                        mImage,
-//                        BaseActivity.sDisplayImageLoaderOptions);
-//
-//        mName.setText(tweet.getUser().getName());
-//        mAlias.setText(tweet.getUser().getScreenName());
-//    }
-
 }

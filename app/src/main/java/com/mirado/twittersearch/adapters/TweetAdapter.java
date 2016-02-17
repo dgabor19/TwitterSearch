@@ -13,16 +13,17 @@ import com.mirado.twittersearch.R;
 import com.mirado.twittersearch.interfaces.TwitterItemClickListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import twitter4j.Status;
-import twitter4j.TweetEntity;
 
 /**
  * Created by gabordudas on 12/02/16.
  * Copyright (c) 2015 TwitterSearch. All rights reserved.
+ */
+
+/**
+ * Adapter to create the list items of tweets
  */
 public class TweetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final String TAG = TweetAdapter.class.getSimpleName();
@@ -48,7 +49,7 @@ public class TweetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         Status tweet = mTweets.get(position);
 
-
+        // Async image loading
         ImageLoader.getInstance().displayImage(
                 tweet.getUser().getOriginalProfileImageURL(),
                 holder.imageTweet,
@@ -57,8 +58,6 @@ public class TweetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         holder.textName.setText(tweet.getUser().getName());
         holder.textDate.setText(MainActivity.sDateFormat.format(tweet.getCreatedAt()));
         holder.textDescription.setText(tweet.getText());
-
-
     }
 
     @Override
@@ -71,6 +70,9 @@ public class TweetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         notifyDataSetChanged();
     }
 
+    /**
+     * ViewHolder pattern for RecyclerView for reusing list items which are out of the screen
+     */
     public static class TweetHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView imageTweet;
         public TextView textName;
@@ -95,8 +97,6 @@ public class TweetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             if (mListener != null) {
                 mListener.onItemClick(v, getAdapterPosition());
             }
-
-
         }
     }
 }

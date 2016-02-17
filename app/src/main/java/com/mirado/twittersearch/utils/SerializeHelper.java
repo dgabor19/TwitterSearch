@@ -1,10 +1,5 @@
 package com.mirado.twittersearch.utils;
 
-/**
- * Created by gabordudas on 14/02/16.
- * Copyright (c) 2015 TwitterSearch. All rights reserved.
- */
-
 import android.content.Context;
 import android.util.Log;
 
@@ -17,8 +12,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 /**
- * Created by gabordudas on 16/06/15.
- * Copyright (c) 2015 TV4Weather. All rights reserved.
+ * Created by gabordudas on 11/02/15.
+ * Copyright (c) 2016 TwitterSearch. All rights reserved.
  */
 public class SerializeHelper {
     private static final String EXTENSION = ".ser";
@@ -126,6 +121,14 @@ public class SerializeHelper {
         return response;
     }
 
+    /**
+     * Removes the serialized file
+     * @param context
+     * @param clazz
+     * @param concatToFileName
+     * @param <T>
+     * @return
+     */
     public static <T> boolean deleteFile(final Context context, Class<T> clazz, final String concatToFileName) {
         String filename = "";
         String path = null;

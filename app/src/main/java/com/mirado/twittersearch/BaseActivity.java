@@ -44,6 +44,11 @@ import twitter4j.auth.RequestToken;
  * Created by gabordudas on 14/02/16.
  * Copyright (c) 2015 TwitterSearch. All rights reserved.
  */
+
+/**
+ * Inheritable class for Activity, implements TwitterListener to hide the not used implementation
+ * from rthe Activity
+ */
 public abstract class BaseActivity extends AppCompatActivity implements TwitterListener {
     public static final String TAG = BaseActivity.class.getSimpleName();
 

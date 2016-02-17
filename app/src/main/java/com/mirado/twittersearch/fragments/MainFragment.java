@@ -1,9 +1,7 @@
 package com.mirado.twittersearch.fragments;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -35,6 +33,10 @@ import twitter4j.Status;
 /**
  * Created by gabordudas on 10/02/16.
  * Copyright (c) 2015 TwitterSearch. All rights reserved.
+ */
+
+/**
+ * This fragment contains the main screen when the app is loaded (vertical list)
  */
 public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, TwitterItemClickListener {
     public static final String TAG = MainFragment.class.getSimpleName();
@@ -70,6 +72,14 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mActivity = (MainActivity) getActivity();
         mTwitterRequests = mActivity.getTwitterRequests();
 
+        if (mActivity.getSupportActionBar() == null) {
+            mActivity.setSupportActionBar(mActivity.getToolbar());
+        }
+
+        // Disabling the back navigation button on top
+        mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        mActivity.getSupportActionBar().setHomeButtonEnabled(false);
+
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
@@ -77,6 +87,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Setting the reference to the basic UI views
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshMain);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerMain);
 
@@ -91,6 +102,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mRecyclerView.setAdapter(mAdapter);
     }
 
+    /**
+     * This inherited method is for creating toolbar menu, in this case it loads a SearchView
+     * @param menu
+     * @param inflater
+     */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu, menu);
@@ -131,6 +147,7 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         switch (item.getItemId()) {
             case R.id.action_search:
 
+                // Expanding/collapsing SearchView when the user is clicking on it
                 if (mSearchView.isIconified()) {
                     mSearchView.setIconified(false);
                 } else {
@@ -146,6 +163,10 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
 
+    /**
+     * Setting the responses for async loading
+     * @param tweets
+     */
     public void setTweets(List<Status> tweets) {
         mTweets = tweets;
 
@@ -156,6 +177,22 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
+    /**
+     * Sets the toolbar to default values
+     */
+    public void setToolbar() {
+        if (mActivity.getSupportActionBar() == null) {
+            mActivity.setSupportActionBar(mActivity.getToolbar());
+        }
+
+        mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        mActivity.getSupportActionBar().setHomeButtonEnabled(false);
+    }
+
+    /**
+     * Enabling/disabling the refresh icon
+     * @param refreshing
+     */
     public void setRefreshing(final boolean refreshing) {
         if (mSwipeRefreshLayout != null) {
             mSwipeRefreshLayout.post(new Runnable() {
@@ -167,6 +204,9 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
+    /**
+     * Callback for SwipeRefreshLayout, it's called by user interaction
+     */
     @Override
     public void onRefresh() {
         if (mSearchKey != null && mSearchKey.length() > 0) {
@@ -183,6 +223,11 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
+    /**
+     * Callback for list item click
+     * @param view
+     * @param position
+     */
     @Override
     public void onItemClick(View view, int position) {
         Log.d(TAG, "clicked on item " + position);
@@ -193,5 +238,6 @@ public class MainFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 .add(R.id.container, detailsFragment, DetailsFragment.TAG)
                 .addToBackStack(DetailsFragment.TAG)
                 .commitAllowingStateLoss();
+
     }
 }

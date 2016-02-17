@@ -1,17 +1,18 @@
 package com.mirado.twittersearch.utils;
 
-import android.app.Activity;
-
 import twitter4j.AsyncTwitter;
 import twitter4j.AsyncTwitterFactory;
 import twitter4j.Query;
-import twitter4j.Twitter;
 import twitter4j.TwitterListener;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * Created by gabordudas on 14/02/16.
  * Copyright (c) 2015 TwitterSearch. All rights reserved.
+ */
+
+/**
+ * A helper class which handles the requests
  */
 public class TwitterRequests {
     public static final String TAG = TwitterRequests.class.getSimpleName();
@@ -52,6 +53,10 @@ public class TwitterRequests {
         mTwitter.addListener(mTwitterListener);
     }
 
+    /**
+     * Searching for a specific keyword
+     * @param keyword
+     */
     public void search(final String keyword) {
         mTwitter.search(new Query(keyword));
     }
