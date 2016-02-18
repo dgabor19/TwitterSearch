@@ -3,14 +3,19 @@ package com.mirado.twittersearch;
 import android.os.SystemClock;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
 
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +60,8 @@ public class ActivityTest {
 
         // Perform swipe to refresh
         onView(withId(R.id.swipeRefreshMain)).perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+        // Checks the number of list items if it's more than 0
+        onView(withId(R.id.recyclerMain)).check(ViewAssertions.matches(Matchers.withListSize(0)));
     }
 
     @Test
@@ -88,4 +95,19 @@ public class ActivityTest {
         };
     }
 
+    static class Matchers {
+        public static Matcher<View> withListSize(final int size) {
+            return new TypeSafeMatcher<View>() {
+                @Override
+                public boolean matchesSafely(final View view) {
+                    return ((RecyclerView) view).getChildCount() > size;
+                }
+
+                @Override
+                public void describeTo(final Description description) {
+                    description.appendText("RecyclerView should have more than " + size + " items");
+                }
+            };
+        }
+    }
 }
